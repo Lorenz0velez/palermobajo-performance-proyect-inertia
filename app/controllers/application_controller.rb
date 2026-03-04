@@ -5,11 +5,14 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :set_current_request_details
+  # TODO: re-enable auth before going to production
   before_action :authenticate
 
   private
 
   def authenticate
+    # Auth disabled during development — re-enable before production
+    return true
     redirect_to sign_in_path unless perform_authentication
   end
 

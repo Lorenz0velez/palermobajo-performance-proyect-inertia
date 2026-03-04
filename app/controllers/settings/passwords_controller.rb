@@ -4,6 +4,7 @@ class Settings::PasswordsController < InertiaController
   before_action :set_user
 
   def show
+    render inertia: "settings/passwords/show"
   end
 
   def update

@@ -2,3 +2,17 @@
 
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
+
+@theme {
+  /* Palermo Bajo — bordo & amarillo */
+  --color-bordo-50:  #fdf2f4;
+  --color-bordo-100: #fce7eb;
+  --color-bordo-200: #f5c9d0;
+  --color-bordo-300: #e99ba8;
+  --color-bordo-400: #d96278;
+  --color-bordo-500: #c43352;
+  --color-bordo-600: #a8203e;
+  --color-bordo-700: #8b1a34;
+  --color-bordo-800: #6e1228;
+  --color-bordo-900: #50101f;
+}

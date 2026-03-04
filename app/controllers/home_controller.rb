@@ -5,5 +5,6 @@ class HomeController < InertiaController
   before_action :perform_authentication
 
   def index
+    render inertia: "home/index"
   end
 end

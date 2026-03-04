@@ -5,7 +5,7 @@ class UsersController < InertiaController
   before_action :require_no_authentication, only: %i[new create]
 
   def new
-    @user = User.new
+    render inertia: "users/new"
   end
 
   def create

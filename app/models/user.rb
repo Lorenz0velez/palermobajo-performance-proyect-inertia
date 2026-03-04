@@ -13,12 +13,24 @@ class User < ApplicationRecord
 
 
   has_many :sessions, dependent: :destroy
+  has_many :user_roles, dependent: :destroy
+  has_many :roles, through: :user_roles
+  has_one :player, dependent: :nullify
+  has_one :coach, dependent: :nullify
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true, format: {with: URI::MailTo::EMAIL_REGEXP}
   validates :password, allow_nil: true, length: {minimum: 12}
 
   normalizes :email, with: -> { _1.strip.downcase }
+
+  def role?(role_name)
+    user_roles.active.joins(:role).exists?(roles: { name: role_name.to_s })
+  end
+
+  def current_roles
+    roles.merge(UserRole.active)
+  end
 
   before_validation if: :email_changed?, on: :update do
     self.verified = false

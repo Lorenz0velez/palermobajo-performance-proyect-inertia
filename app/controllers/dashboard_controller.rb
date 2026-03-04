@@ -2,5 +2,6 @@
 
 class DashboardController < InertiaController
   def index
+    render inertia: "dashboard/index"
   end
 end

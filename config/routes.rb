@@ -17,6 +17,27 @@ Rails.application.routes.draw do
 
   get :dashboard, to: "dashboard#index"
 
+  # Forms públicos (sin login)
+  get  "bienestar",  to: "wellness#new",    as: :wellness_form
+  post "bienestar",  to: "wellness#create"
+  get  "percepcion", to: "perception#new",  as: :perception_form
+  post "percepcion", to: "perception#create"
+
+  namespace :player do
+    get :home, to: "home#index"
+    resources :matches, only: [:index, :show]
+    resources :trainings, only: [:index, :show]
+    get :profile, to: "profile#show"
+  end
+
+  namespace :coach do
+    get :home, to: "home#index"
+    resources :squad, only: [:index, :show]
+    resources :trainings, only: [:index, :show, :new, :create]
+    resources :stats, only: [:index, :show]
+    get "stats/matches/:id", to: "stats#match_detail"
+  end
+
   namespace :settings do
     resource :profile, only: [:show, :update]
     resource :password, only: [:show, :update]

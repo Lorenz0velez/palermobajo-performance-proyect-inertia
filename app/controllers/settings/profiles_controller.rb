@@ -4,6 +4,7 @@ class Settings::ProfilesController < InertiaController
   before_action :set_user
 
   def show
+    render inertia: "settings/profiles/show", props: { name: Current.user.name, email: Current.user.email }
   end
 
   def update

@@ -4,6 +4,7 @@ class Settings::EmailsController < InertiaController
   before_action :set_user
 
   def show
+    render inertia: "settings/emails/show", props: { email: Current.user.email }
   end
 
   def update
