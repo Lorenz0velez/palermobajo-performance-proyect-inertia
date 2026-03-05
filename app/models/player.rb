@@ -18,6 +18,7 @@ class Player < ApplicationRecord
   has_many :physical_evaluations, dependent: :destroy
   has_many :injuries, dependent: :destroy
   has_many :player_reports, dependent: :destroy
+  has_one  :nutrition_tracking, dependent: :destroy
 
   serialize :biometric, coder: JSON
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_05_154421) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_05_200000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -265,6 +265,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_154421) do
     t.time "start_time", null: false
     t.datetime "updated_at", null: false
     t.index ["nutrition_session_id"], name: "index_nutrition_slots_on_nutrition_session_id"
+  end
+
+  create_table "nutrition_trackings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "created_by_id"
+    t.integer "player_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_nutrition_trackings_on_created_by_id"
+    t.index ["player_id"], name: "index_nutrition_trackings_on_player_id", unique: true
   end
 
   create_table "physical_evaluations", force: :cascade do |t|
@@ -569,6 +578,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_154421) do
   add_foreign_key "nutrition_convocados", "players"
   add_foreign_key "nutrition_sessions", "users", column: "created_by_id"
   add_foreign_key "nutrition_slots", "nutrition_sessions"
+  add_foreign_key "nutrition_trackings", "players"
+  add_foreign_key "nutrition_trackings", "users", column: "created_by_id"
   add_foreign_key "physical_evaluations", "physical_tests"
   add_foreign_key "physical_evaluations", "players"
   add_foreign_key "physical_evaluations", "users", column: "validated_by_id"

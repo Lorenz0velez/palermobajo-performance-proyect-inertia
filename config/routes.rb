@@ -91,6 +91,8 @@ Rails.application.routes.draw do
       member do
         post :weigh
         post :plan
+        post   :add_tracking
+        delete :remove_tracking
       end
     end
     resources :nutrition_sessions do

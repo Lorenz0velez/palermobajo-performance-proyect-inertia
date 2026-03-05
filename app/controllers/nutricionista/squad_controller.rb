@@ -2,12 +2,16 @@
 
 class Nutricionista::SquadController < Nutricionista::ApplicationController
   def index
-    players = all_players.includes(:physical_histories, :functional_role)
+    players = all_players.includes(:physical_histories, :functional_role, :nutrition_tracking)
 
     latest_by_player = latest_pesaje_by_player(players.pluck(:id))
+    tracked_ids      = NutritionTracking.pluck(:player_id).to_set
+
+    all_serialized = players.map { |p| serialize_player(p, latest_by_player[p.id], tracked_ids.include?(p.id)) }
 
     render inertia: "nutricionista/squad/index", props: {
-      players: players.map { |p| serialize_player(p, latest_by_player[p.id]) }
+      players:  all_serialized.reject { |p| p[:tracked] },
+      tracking: all_serialized.select { |p| p[:tracked] }
     }
   end
 
@@ -55,6 +59,18 @@ class Nutricionista::SquadController < Nutricionista::ApplicationController
     }
   end
 
+  def add_tracking
+    player = Player.find(params[:id])
+    NutritionTracking.find_or_create_by!(player: player, created_by: Current.user)
+    redirect_to nutricionista_squad_index_path, notice: "#{player.full_name} agregado al seguimiento."
+  end
+
+  def remove_tracking
+    player = Player.find(params[:id])
+    NutritionTracking.find_by(player: player)&.destroy
+    redirect_to nutricionista_squad_index_path, notice: "#{player.full_name} quitado del seguimiento."
+  end
+
   def weigh
     player = Player.find(params[:id])
 
@@ -95,7 +111,7 @@ class Nutricionista::SquadController < Nutricionista::ApplicationController
 
   private
 
-  def serialize_player(p, ph)
+  def serialize_player(p, ph, tracked = false)
     {
       id:              p.id,
       full_name:       p.full_name,
@@ -103,7 +119,8 @@ class Nutricionista::SquadController < Nutricionista::ApplicationController
       weight_kg:       ph&.weight_kg,
       muscle_mass_kg:  ph&.muscle_mass_kg,
       fat_mass_kg:     ph&.fat_mass_kg,
-      last_date:       ph&.date&.strftime("%d/%m/%Y")
+      last_date:       ph&.date&.strftime("%d/%m/%Y"),
+      tracked:         tracked
     }
   end
 
