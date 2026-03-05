@@ -9,16 +9,17 @@ interface PlayerLayoutProps {
   children: ReactNode
 }
 
-const navItems = [
-  { label: "Inicio",         href: "/player/home",         icon: Home        },
-  { label: "Partidos",       href: "/player/matches",      icon: ShieldIcon  },
-  { label: "Entrenamientos", href: "/player/trainings",    icon: Dumbbell    },
-  { label: "Evaluac.",       href: "/player/evaluaciones", icon: Activity    },
-  { label: "Nutrición",      href: "/player/nutricion",    icon: Apple       },
+const ALL_NAV_ITEMS = [
+  { label: "Inicio",         href: "/player/home",         icon: Home,       nutrition: false },
+  { label: "Partidos",       href: "/player/matches",      icon: ShieldIcon, nutrition: false },
+  { label: "Entrenamientos", href: "/player/trainings",    icon: Dumbbell,   nutrition: false },
+  { label: "Evaluac.",       href: "/player/evaluaciones", icon: Activity,   nutrition: false },
+  { label: "Nutrición",      href: "/player/nutricion",    icon: Apple,      nutrition: true  },
 ]
 
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
-  const { url } = usePage()
+  const { url, props } = usePage<{ nutrition_tracked: boolean }>()
+  const navItems = ALL_NAV_ITEMS.filter(item => !item.nutrition || props.nutrition_tracked)
 
   return (
     <div className="flex h-screen flex-col bg-gray-50">

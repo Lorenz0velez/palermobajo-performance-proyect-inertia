@@ -161,6 +161,7 @@ class Player::HomeController < Player::ApplicationController
 
   def pending_nutrition_props(player)
     return nil unless player
+    return nil unless player.nutrition_tracking.present?
     nc = NutritionConvocado
       .joins(:nutrition_session)
       .where(player: player, cancelled_at: nil, nutrition_slot_id: nil)

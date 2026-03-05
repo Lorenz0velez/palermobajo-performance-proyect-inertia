@@ -4,6 +4,10 @@ class Player::NutritionSessionsController < Player::ApplicationController
   before_action :set_player
 
   def index
+    unless @player.nutrition_tracking.present?
+      return render inertia: "player/nutrition_sessions/index", props: { sessions: [] }
+    end
+
     convocados = NutritionConvocado
       .where(player: @player)
       .includes(nutrition_session: :nutrition_slots)
@@ -15,6 +19,10 @@ class Player::NutritionSessionsController < Player::ApplicationController
   end
 
   def show
+    unless @player.nutrition_tracking.present?
+      redirect_to player_root_path, alert: "No tenés seguimiento nutricional activo."
+      return
+    end
     convocado = NutritionConvocado.find_by!(nutrition_session_id: params[:id], player: @player)
     ns = convocado.nutrition_session
 
