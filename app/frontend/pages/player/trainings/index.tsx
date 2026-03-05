@@ -1,36 +1,90 @@
 import { Head, Link } from "@inertiajs/react"
-import { Calendar, CheckCircle, XCircle } from "lucide-react"
+import { Calendar } from "lucide-react"
+
 import PlayerLayout from "@/layouts/player/player-layout"
 
-interface UpcomingTraining {
-  id: string
+interface Training {
+  id: number
   date: string
-  start_time: string
-  end_time: string
-  training_type: string
+  date_display: string
+  start_time: string | null
+  end_time: string | null
+  training_type: string | null
   objective: string | null
-}
-
-interface PastTraining {
-  id: string
-  date: string
-  training_type: string
-  present: boolean
-  minutes_participated: number | null
-  absence_reason: string | null
+  for_all: boolean
+  target_groups: string[]
 }
 
 interface Props {
-  upcoming: UpcomingTraining[]
-  past: PastTraining[]
+  upcoming: Training[]
+  past: Training[]
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })
+const TYPE_CONFIG: Record<string, { label: string; classes: string }> = {
+  rugby:  { label: "Rugby",    classes: "bg-green-50 text-green-700 border-green-200" },
+  fisico: { label: "Físico",   classes: "bg-bordo-50 text-bordo-700 border-bordo-200" },
+  fuerza: { label: "Fuerza",   classes: "bg-blue-50 text-blue-700 border-blue-200"   },
 }
 
-function formatTime(t: string) {
-  return t.slice(0, 5)
+function TypeBadge({ type }: { type: string | null }) {
+  if (!type) return null
+  const cfg = TYPE_CONFIG[type] ?? { label: type, classes: "bg-gray-50 text-gray-600 border-gray-200" }
+  return (
+    <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 border capitalize ${cfg.classes}`}>
+      {cfg.label}
+    </span>
+  )
+}
+
+const GROUP_LABELS: Record<string, string> = { forward: "Forwards", back: "Backs" }
+
+function formatDateLong(dateStr: string) {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("es-AR", {
+    weekday: "long", day: "numeric", month: "long"
+  })
+}
+
+function TargetPill({ t }: { t: Training }) {
+  if (t.for_all) return null
+  const labels = t.target_groups.map((g) => GROUP_LABELS[g] ?? g)
+  return (
+    <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${
+      labels.includes("Forwards") && labels.includes("Backs")
+        ? "bg-purple-50 text-purple-700"
+        : labels.includes("Forwards")
+          ? "bg-bordo-50 text-bordo-700"
+          : "bg-blue-50 text-blue-700"
+    }`}>
+      {labels.join(" + ")}
+    </span>
+  )
+}
+
+function TrainingCard({ t }: { t: Training }) {
+  return (
+    <Link
+      href={`/player/trainings/${t.id}`}
+      className="block rounded-2xl bg-white border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-gray-400 capitalize">{formatDateLong(t.date)}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <TypeBadge type={t.training_type} />
+          </div>
+          {t.objective && <p className="text-sm text-gray-500 mt-1 truncate">{t.objective}</p>}
+        </div>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {t.start_time && (
+            <span className="text-xs font-medium text-bordo-700">
+              {t.start_time}{t.end_time ? ` – ${t.end_time}` : ""}
+            </span>
+          )}
+          <TargetPill t={t} />
+        </div>
+      </div>
+    </Link>
+  )
 }
 
 export default function PlayerTrainingsIndex({ upcoming, past }: Props) {
@@ -39,13 +93,13 @@ export default function PlayerTrainingsIndex({ upcoming, past }: Props) {
       <Head title="Entrenamientos" />
 
       <div className="bg-white border-b border-gray-100 px-4 pb-4 pt-8">
-        <h1 className="text-2xl font-bold text-gray-900">Entrenamientos</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Mis Entrenamientos</h1>
       </div>
 
-      <div className="px-4 pt-4 pb-4 bg-gray-50 min-h-full space-y-5">
+      <div className="px-4 pt-4 pb-8 bg-gray-50 min-h-full space-y-6">
         {/* Upcoming */}
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-bordo-700 mb-3">Próximos</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-bordo-700 mb-3">Proximos</h2>
           {upcoming.length === 0 ? (
             <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 text-center">
               <Calendar className="h-8 w-8 text-gray-300 mx-auto mb-2" />
@@ -53,64 +107,38 @@ export default function PlayerTrainingsIndex({ upcoming, past }: Props) {
             </div>
           ) : (
             <div className="space-y-3">
-              {upcoming.map((t) => (
-                <Link
-                  key={t.id}
-                  href={`/player/trainings/${t.id}`}
-                  className="block rounded-2xl bg-white border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs text-gray-400 capitalize">{formatDate(t.date)}</p>
-                      <p className="font-semibold text-gray-900 mt-0.5">{t.training_type}</p>
-                      {t.objective && <p className="text-sm text-gray-500 mt-1">{t.objective}</p>}
-                    </div>
-                    <div className="text-right text-sm text-bordo-700 font-medium">
-                      <p>{formatTime(t.start_time)}</p>
-                      <p className="text-gray-400 text-xs">— {formatTime(t.end_time)}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              {upcoming.map((t) => <TrainingCard key={t.id} t={t} />)}
             </div>
           )}
         </section>
 
-        {/* History */}
-        <section className="pb-6">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-bordo-700 mb-3">Historial</h2>
-          {past.length === 0 ? (
-            <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 text-center">
-              <p className="text-sm text-gray-400">Sin historial de entrenamientos</p>
-            </div>
-          ) : (
+        {/* Past */}
+        {past.length > 0 && (
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Anteriores</h2>
             <div className="space-y-3">
               {past.map((t) => (
                 <Link
                   key={t.id}
                   href={`/player/trainings/${t.id}`}
-                  className="flex items-center gap-3 rounded-2xl bg-white border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+                  className="flex items-center justify-between rounded-2xl bg-white border border-gray-100 shadow-sm px-4 py-3 hover:shadow-md transition-shadow"
                 >
-                  {t.present ? (
-                    <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-red-400 shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-400 capitalize">{formatDate(t.date)}</p>
-                    <p className="font-medium text-gray-800 text-sm">{t.training_type}</p>
-                    {!t.present && t.absence_reason && (
-                      <p className="text-xs text-red-400 mt-0.5 truncate">{t.absence_reason}</p>
-                    )}
+                  <div>
+                    <p className="text-xs text-gray-400 capitalize">{formatDateLong(t.date)}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <TypeBadge type={t.training_type} />
+                    </div>
+                    {t.objective && <p className="text-xs text-gray-500 mt-0.5 truncate">{t.objective}</p>}
                   </div>
-                  {t.minutes_participated != null && (
-                    <span className="text-sm text-gray-500">{t.minutes_participated} min</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <TargetPill t={t} />
+                    <span className="text-gray-300 text-lg">›</span>
+                  </div>
                 </Link>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
       </div>
     </PlayerLayout>
   )

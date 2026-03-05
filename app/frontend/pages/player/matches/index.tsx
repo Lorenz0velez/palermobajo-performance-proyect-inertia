@@ -1,7 +1,6 @@
 import { Head, Link } from "@inertiajs/react"
 import { ChevronRight, Home, MapPin } from "lucide-react"
 import PlayerLayout from "@/layouts/player/player-layout"
-import { cn } from "@/lib/utils"
 
 interface Match {
   id: string
@@ -10,8 +9,11 @@ interface Match {
   points_for: number
   points_against: number
   date: string
+  team_name: string | null
+  kickoff_time: string | null
   minutes_played: number
   starter: boolean
+  position: string | null
 }
 
 interface Props {
@@ -58,9 +60,10 @@ export default function PlayerMatchesIndex({ matches }: Props) {
                   : <span className="flex items-center gap-1 text-xs text-gray-400"><MapPin className="h-3 w-3" /> Visitante</span>
                 }
                 {match.starter && <span className="rounded-full bg-bordo-100 px-2 py-0.5 text-xs font-medium text-bordo-700">Titular</span>}
+                {match.team_name && <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-semibold text-yellow-700">{match.team_name}</span>}
               </div>
               <p className="font-bold text-gray-900">Vs. {match.opponent}</p>
-              <p className="text-sm text-gray-500">{formatDate(match.date)} · {match.minutes_played} min</p>
+              <p className="text-sm text-gray-500">{formatDate(match.date)} · {match.minutes_played != null ? `${match.minutes_played} min` : ""}{match.position ? ` · ${match.position}` : ""}</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">

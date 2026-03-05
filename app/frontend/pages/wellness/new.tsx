@@ -1,8 +1,10 @@
-import { Head, useForm } from "@inertiajs/react"
+import { Head, useForm, Link } from "@inertiajs/react"
+import { ArrowLeft } from "lucide-react"
 
 interface Props {
   errors?: Record<string, string>
   values?: Record<string, string>
+  player_name?: string
 }
 
 const OPTIONS = {
@@ -93,7 +95,7 @@ function Chips({
   )
 }
 
-export default function WellnessNew({ errors = {}, values = {} }: Props) {
+export default function WellnessNew({ errors = {}, values = {}, player_name }: Props) {
   const today = new Date().toISOString().split("T")[0]
 
   const { data, setData, post, processing } = useForm({
@@ -119,12 +121,16 @@ export default function WellnessNew({ errors = {}, values = {} }: Props) {
 
       <div className="bg-bordo-800 px-4 pb-5 pt-8 text-white">
         <div className="flex items-center gap-3">
+          <Link href="/player/home" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bordo-700 hover:bg-bordo-600 transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-400">
             <span className="text-lg font-black text-bordo-900">PB</span>
           </div>
           <div>
             <p className="text-xs text-bordo-200 uppercase tracking-wide">Palermo Bajo</p>
             <h1 className="text-xl font-bold leading-tight">Chequeo Diario</h1>
+            {player_name && <p className="text-xs text-bordo-300 mt-0.5">{player_name}</p>}
           </div>
         </div>
         <p className="mt-3 text-sm text-bordo-200">Antes del entrenamiento, completá este formulario (1 min) ✍️</p>

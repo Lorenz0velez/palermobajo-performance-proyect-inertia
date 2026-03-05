@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .header { background: #7c1d2e; padding: 20px; color: white; }
+    .content { padding: 24px; }
+    .btn { display: inline-block; background: #7c1d2e; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 16px; }
+    .info { background: #f5f5f5; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2 style="margin:0">Palermo Bajo Performance</h2>
+  </div>
+  <div class="content">
+    <p>Hola <strong><%= @player.full_name %></strong>,</p>
+    <p>Fuiste convocado/a a la sesión de nutrición del:</p>
+    <div class="info">
+      <strong>📅 Fecha:</strong> <%= @session.date.strftime("%A %d de %B de %Y") %><br>
+    </div>
+    <p>Ingresá a la app para elegir tu turno disponible.</p>
+    <p style="color:#666; font-size: 14px;">Si tenés algún problema para reservar tu turno, comunicáte con el staff.</p>
+  </div>
+</body>
+</html>

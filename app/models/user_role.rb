@@ -3,6 +3,7 @@
 class UserRole < ApplicationRecord
   belongs_to :user
   belongs_to :role
+  belongs_to :category, optional: true
 
   scope :active, -> { where(active: true).where("end_date IS NULL OR end_date >= ?", Date.today) }
   scope :current, -> { active }

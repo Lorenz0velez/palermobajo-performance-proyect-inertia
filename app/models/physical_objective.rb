@@ -12,12 +12,25 @@ class PhysicalObjective < ApplicationRecord
 
   def status_for(value)
     return :unknown if value.nil?
-    if green_threshold && value >= green_threshold
-      :green
-    elsif yellow_threshold && value >= yellow_threshold
-      :yellow
+    v = value.to_f
+    if threshold_type == "max"
+      # Lower is better (e.g. velocity, agility)
+      if green_threshold && v <= green_threshold
+        :green
+      elsif yellow_threshold && v <= yellow_threshold
+        :yellow
+      else
+        :red
+      end
     else
-      :red
+      # Higher is better (default: "min")
+      if green_threshold && v >= green_threshold
+        :green
+      elsif yellow_threshold && v >= yellow_threshold
+        :yellow
+      else
+        :red
+      end
     end
   end
 end

@@ -1,22 +1,20 @@
-import type { ReactNode } from "react"
 import { Link, usePage } from "@inertiajs/react"
-import {
-  Home,
-  Shield,
-  Dumbbell,
-  User,
-} from "lucide-react"
+import { Activity, Apple, Dumbbell, Home, Shield as ShieldIcon } from "lucide-react"
+import { type ReactNode } from "react"
+
 import { cn } from "@/lib/utils"
+import CpbHeader from "@/components/cpb-header"
 
 interface PlayerLayoutProps {
   children: ReactNode
 }
 
 const navItems = [
-  { label: "Inicio", href: "/player/home", icon: Home },
-  { label: "Partidos", href: "/player/matches", icon: Shield },
-  { label: "Entrenamientos", href: "/player/trainings", icon: Dumbbell },
-  { label: "Perfil", href: "/player/profile", icon: User },
+  { label: "Inicio",         href: "/player/home",         icon: Home        },
+  { label: "Partidos",       href: "/player/matches",      icon: ShieldIcon  },
+  { label: "Entrenamientos", href: "/player/trainings",    icon: Dumbbell    },
+  { label: "Evaluac.",       href: "/player/evaluaciones", icon: Activity    },
+  { label: "Nutrición",      href: "/player/nutricion",    icon: Apple       },
 ]
 
 export default function PlayerLayout({ children }: PlayerLayoutProps) {
@@ -24,8 +22,10 @@ export default function PlayerLayout({ children }: PlayerLayoutProps) {
 
   return (
     <div className="flex h-screen flex-col bg-gray-50">
-      {/* Main content - scrollable */}
-      <main className="flex-1 overflow-y-auto pb-20">
+      <CpbHeader profileHref="/player/profile" />
+
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto pt-14 pb-20">
         {children}
       </main>
 

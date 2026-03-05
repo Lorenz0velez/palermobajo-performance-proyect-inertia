@@ -60,12 +60,12 @@ export default function CoachTrainingsIndex({ upcoming, past }: Props) {
                 </div>
                 <p className="mt-2 text-xs text-gray-500 pl-12">{t.objective}</p>
                 <div className="mt-3 flex gap-2 pl-12">
-                  <button className="rounded-lg border border-bordo-200 px-3 py-1.5 text-xs font-semibold text-bordo-700 hover:bg-bordo-50">
-                    Planificar
-                  </button>
-                  <button className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-50">
-                    Adjuntar PDF
-                  </button>
+                  <Link href={`/coach/trainings/${t.id}/edit`} className="rounded-lg border border-bordo-200 px-3 py-1.5 text-xs font-semibold text-bordo-700 hover:bg-bordo-50">
+                    Editar
+                  </Link>
+                  <Link href={`/coach/trainings/${t.id}`} className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-50">
+                    Ver
+                  </Link>
                 </div>
               </div>
             ))}

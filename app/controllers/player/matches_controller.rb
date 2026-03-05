@@ -1,61 +1,77 @@
 # frozen_string_literal: true
 
-class Player::MatchesController < InertiaController
-  # Fixture Primera 2026 — partidos jugados al 04/03/2026
-  # L = Local (home), V = Visitante (away)
-  FAKE_MATCHES = [
-    { id: 4, label: "Amistoso 4", opponent: "GER",                  home: false, points_for: 19, points_against: 24, date: "2026-02-28", minutes_played: 55, starter: true  },
-    { id: 3, label: "Amistoso 3", opponent: "Jockey Club CBA",      home: true,  points_for: 28, points_against: 21, date: "2026-02-21", minutes_played: 80, starter: true  },
-    { id: 2, label: "Amistoso 2", opponent: "Córdoba Athletic Club", home: true,  points_for: 22, points_against: 17, date: "2026-02-14", minutes_played: 40, starter: false },
-    { id: 1, label: "Amistoso 1", opponent: "Partido Entre Nos",    home: true,  points_for: 35, points_against: 28, date: "2026-02-07", minutes_played: 30, starter: false }
-  ]
-
-  FAKE_STATS = {
-    4 => [
-      { name: "Tries",            unit: nil, value: 0 },
-      { name: "Tackles",          unit: nil, value: 7 },
-      { name: "Tackles perdidos", unit: nil, value: 1 },
-      { name: "Lineouts ganados", unit: nil, value: 4 },
-      { name: "Lineouts totales", unit: nil, value: 5 },
-      { name: "Metros ganados",   unit: "m", value: 22 }
-    ],
-    3 => [
-      { name: "Tries",            unit: nil, value: 1 },
-      { name: "Tackles",          unit: nil, value: 9 },
-      { name: "Tackles perdidos", unit: nil, value: 2 },
-      { name: "Lineouts ganados", unit: nil, value: 6 },
-      { name: "Lineouts totales", unit: nil, value: 7 },
-      { name: "Metros ganados",   unit: "m", value: 41 }
-    ],
-    2 => [
-      { name: "Tries",            unit: nil, value: 0 },
-      { name: "Tackles",          unit: nil, value: 4 },
-      { name: "Lineouts ganados", unit: nil, value: 2 },
-      { name: "Lineouts totales", unit: nil, value: 3 }
-    ],
-    1 => [
-      { name: "Tries",            unit: nil, value: 0 },
-      { name: "Tackles",          unit: nil, value: 3 },
-      { name: "Lineouts ganados", unit: nil, value: 1 },
-      { name: "Lineouts totales", unit: nil, value: 2 }
-    ]
-  }
-
-  FAKE_POSITIONS = { 4 => "Lock", 3 => "Lock", 2 => "Lock", 1 => "Lock" }
-
+class Player::MatchesController < Player::ApplicationController
   def index
-    render inertia: "player/matches/index", props: { matches: FAKE_MATCHES }
+    player = current_player
+    return render inertia: "player/matches/index", props: { matches: [] } unless player
+
+    match_players = player.match_players
+      .joins(:match)
+      .includes(match: :tournament, match_player_stats: :match_stat_type, position: [])
+      .order("matches.date DESC")
+
+    matches = match_players.map { |mp| serialize_mp(mp) }
+    render inertia: "player/matches/index", props: { matches: matches }
   end
 
   def show
-    id   = params[:id].to_i
-    base = FAKE_MATCHES.find { |m| m[:id] == id } || FAKE_MATCHES.first
+    player = current_player
+    mp = player&.match_players
+      .joins(:match)
+      .includes(match: [:tournament, :match_stats => :match_stat_type], match_player_stats: :match_stat_type, position: [])
+      .find_by(match_id: params[:id])
+
+    return redirect_to player_matches_path, alert: "Partido no encontrado." unless mp
+
+    player_stats = mp.match_player_stats.map do |s|
+      { name: s.match_stat_type.name, unit: s.match_stat_type.unit, value: s.value }
+    end
+
+    team_stats = mp.match.match_stats.includes(:match_stat_type).map do |s|
+      { name: s.match_stat_type.name, unit: s.match_stat_type.unit, value: s.value }
+    end
+
+    match = mp.match
     render inertia: "player/matches/show", props: {
-      match: base.merge(
-        video_link: nil,
-        position: FAKE_POSITIONS[id],
-        stats: FAKE_STATS[id] || []
-      )
+      match: {
+        id:             match.id,
+        opponent:       match.opponent,
+        home:           match.home,
+        points_for:     match.points_for,
+        points_against: match.points_against,
+        date:           match.date&.strftime("%Y-%m-%d"),
+        video_link:     match.video_link,
+        team_name:      match.team_name,
+        kickoff_time:   match.kickoff_time,
+        minutes_played: mp.minutes_played,
+        starter:        mp.starter,
+        position:       mp.position&.name,
+        stats:          player_stats,
+        team_stats:     team_stats
+      }
+    }
+  end
+
+  private
+
+  def current_player
+    Current.user&.player || Player.first
+  end
+
+  def serialize_mp(mp)
+    match = mp.match
+    {
+      id:             match.id,
+      opponent:       match.opponent,
+      home:           match.home,
+      points_for:     match.points_for,
+      points_against: match.points_against,
+      date:           match.date&.strftime("%Y-%m-%d"),
+      team_name:      match.team_name,
+      kickoff_time:   match.kickoff_time,
+      minutes_played: mp.minutes_played,
+      starter:        mp.starter,
+      position:       mp.position&.name
     }
   end
 end

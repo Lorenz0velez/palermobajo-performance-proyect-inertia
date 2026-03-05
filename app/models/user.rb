@@ -11,7 +11,6 @@ class User < ApplicationRecord
     password_salt.last(10)
   end
 
-
   has_many :sessions, dependent: :destroy
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -19,17 +18,31 @@ class User < ApplicationRecord
   has_one :coach, dependent: :nullify
 
   validates :name, presence: true
-  validates :email, presence: true, uniqueness: true, format: {with: URI::MailTo::EMAIL_REGEXP}
-  validates :password, allow_nil: true, length: {minimum: 12}
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :password, allow_nil: true, length: { minimum: 12 }
+  validates :dni, uniqueness: true, allow_nil: true
+  validates :pending_role, inclusion: { in: %w[player coach] }, allow_nil: true
 
   normalizes :email, with: -> { _1.strip.downcase }
+  normalizes :dni,   with: -> { _1.to_s.strip.presence }
+
+  scope :pending_approval, -> { where(verified: false).where.not(pending_role: nil) }
+  scope :approved,         -> { where(verified: true) }
 
   def role?(role_name)
     user_roles.active.joins(:role).exists?(roles: { name: role_name.to_s })
   end
 
+  def admin?
+    role?("Admin")
+  end
+
   def current_roles
     roles.merge(UserRole.active)
+  end
+
+  def full_name
+    [first_name, last_name].compact.join(" ").presence || name
   end
 
   before_validation if: :email_changed?, on: :update do

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PlayerWellness < ApplicationRecord
+  self.table_name = "player_wellness"
+
   belongs_to :player
 
   SCALE_RANGE = (1..5)

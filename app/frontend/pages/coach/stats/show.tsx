@@ -31,7 +31,7 @@ function fmtDate(d: string) {
   return new Date(d).toLocaleDateString("es-AR", { day: "numeric", month: "short" })
 }
 
-export default function CoachStatsShow({ player, matches, breakdown }: Props) {
+export default function CoachStatsShow({ player, breakdown }: Props) {
   const initials = player.name.split(" ").map(n => n[0]).slice(0, 2).join("")
 
   return (

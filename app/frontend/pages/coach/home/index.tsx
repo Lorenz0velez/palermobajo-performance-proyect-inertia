@@ -1,5 +1,5 @@
 import { Head, Link } from "@inertiajs/react"
-import { Bell, ChevronRight, CalendarDays, Trophy, AlertCircle, Clock } from "lucide-react"
+import { ChevronRight, CalendarDays, Trophy, AlertCircle } from "lucide-react"
 import CoachLayout from "@/layouts/coach/coach-layout"
 
 interface Props {
@@ -17,35 +17,15 @@ function formatDate(d: string) {
 }
 
 export default function CoachHome({ coach, season, next_training, next_match, wellness_summary, team_stats, pending_tasks }: Props) {
-  const initials = `${coach.first_name[0]}${coach.last_name[0]}`
-
   return (
     <CoachLayout>
       <Head title="Inicio — Entrenador" />
 
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-4 pt-10 pb-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-bordo-800 text-yellow-400 font-bold text-lg">
-              {initials}
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">¡Hola,</p>
-              <h1 className="text-xl font-bold text-gray-900">{coach.first_name} {coach.last_name}!</h1>
-            </div>
-          </div>
-          <button className="relative rounded-full p-2 text-gray-400 hover:text-gray-600">
-            <Bell className="h-6 w-6" />
-          </button>
-        </div>
-
-        {/* Info pills */}
-        <div className="mt-4 flex gap-2 flex-wrap">
-          <span className="rounded-full bg-bordo-50 px-3 py-1 text-xs font-semibold text-bordo-700">{coach.category}</span>
-          <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">{coach.role}</span>
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">Temporada {season}</span>
-        </div>
+      {/* Info pills bar */}
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex gap-2 flex-wrap">
+        <span className="rounded-full bg-bordo-50 px-3 py-1 text-xs font-semibold text-bordo-700">{coach.category}</span>
+        <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">{coach.role}</span>
+        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">Temporada {season}</span>
       </div>
 
       <div className="px-4 pt-4 pb-6 space-y-5">

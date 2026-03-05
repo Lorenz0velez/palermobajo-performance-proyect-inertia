@@ -4,7 +4,10 @@ class WellnessController < InertiaController
   skip_before_action :authenticate
 
   def new
-    render inertia: "wellness/new"
+    player = Current.user&.player || Player.first
+    render inertia: "wellness/new", props: {
+      player_name: player ? "#{player.first_name} #{player.last_name}" : nil
+    }
   end
 
   def create

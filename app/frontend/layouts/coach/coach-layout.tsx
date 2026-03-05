@@ -1,17 +1,19 @@
 import type { ReactNode } from "react"
 import { Link, usePage } from "@inertiajs/react"
-import { Home, Users, Dumbbell, BarChart2 } from "lucide-react"
+import { Home, Users, Dumbbell, BarChart2, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils"
+import CpbHeader from "@/components/cpb-header"
 
 interface CoachLayoutProps {
   children: ReactNode
 }
 
 const navItems = [
-  { label: "Inicio",         href: "/coach/home",      icon: Home     },
-  { label: "Plantel",        href: "/coach/squad",     icon: Users    },
-  { label: "Entrenamientos", href: "/coach/trainings", icon: Dumbbell },
-  { label: "Estadísticas",   href: "/coach/stats",     icon: BarChart2},
+  { label: "Inicio",         href: "/coach/home",      icon: Home          },
+  { label: "Plantel",        href: "/coach/squad",     icon: Users         },
+  { label: "Entrenamientos", href: "/coach/trainings", icon: Dumbbell      },
+  { label: "Partidos",       href: "/coach/matches",   icon: CalendarDays  },
+  { label: "Estadísticas",   href: "/coach/stats",     icon: BarChart2     },
 ]
 
 export default function CoachLayout({ children }: CoachLayoutProps) {
@@ -19,7 +21,8 @@ export default function CoachLayout({ children }: CoachLayoutProps) {
 
   return (
     <div className="flex h-screen flex-col bg-gray-50">
-      <main className="flex-1 overflow-y-auto pb-20">
+      <CpbHeader profileHref="/coach/profile" />
+      <main className="flex-1 overflow-y-auto pt-14 pb-20">
         {children}
       </main>
 

@@ -49,6 +49,11 @@ export default function CoachTrainingsShow({ training }: Props) {
         <Link href="/coach/trainings" className="absolute top-10 left-4 text-white/70 hover:text-white flex items-center gap-1 text-sm">
           <ArrowLeft className="h-4 w-4" /> Entrenamientos
         </Link>
+        {!isPast && (
+          <Link href={`/coach/trainings/${training.id}/edit`} className="absolute top-10 right-4 rounded-lg bg-white/15 px-3 py-1 text-sm font-semibold text-white hover:bg-white/25">
+            Editar
+          </Link>
+        )}
         <div className="mt-4 text-center">
           <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">{training.training_type}</span>
           <p className="mt-2 text-lg font-bold text-white capitalize">{fmtDate(training.date)}</p>

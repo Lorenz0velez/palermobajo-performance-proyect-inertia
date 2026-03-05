@@ -14,7 +14,6 @@ interface Player {
 interface Physical {
   weight_kg: number | null
   height_cm: number | null
-  bmi: number | null
   muscle_mass_kg: number | null
   fat_mass_kg: number | null
 }
@@ -32,13 +31,19 @@ interface Props {
   injuries: Injury[]
 }
 
+// Parse ISO date string (YYYY-MM-DD) as LOCAL date to avoid UTC off-by-one in timezones behind UTC
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number)
+  return new Date(y, m - 1, d)
+}
+
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })
+  return parseLocalDate(dateStr).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })
 }
 
 function age(birth: string) {
   const today = new Date()
-  const b = new Date(birth)
+  const b = parseLocalDate(birth)
   let a = today.getFullYear() - b.getFullYear()
   const m = today.getMonth() - b.getMonth()
   if (m < 0 || (m === 0 && today.getDate() < b.getDate())) a--
@@ -114,7 +119,6 @@ export default function PlayerProfile({ player, physical, injuries }: Props) {
             <>
               <PhysRow label="Peso" value={physical.weight_kg} unit="kg" />
               <PhysRow label="Altura" value={physical.height_cm} unit="cm" />
-              <PhysRow label="IMC" value={physical.bmi} />
               <PhysRow label="Masa muscular" value={physical.muscle_mass_kg} unit="kg" />
               <PhysRow label="Masa grasa" value={physical.fat_mass_kg} unit="kg" />
             </>

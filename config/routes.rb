@@ -26,16 +26,87 @@ Rails.application.routes.draw do
   namespace :player do
     get :home, to: "home#index"
     resources :matches, only: [:index, :show]
-    resources :trainings, only: [:index, :show]
+    resources :trainings, only: [:index, :show] do
+      member do
+        post :perception
+      end
+    end
     get :profile, to: "profile#show"
+    get :evaluaciones, to: "evaluaciones#index"
+    get :nutricion, to: "nutricion#index"
+    resources :nutrition_sessions, only: [:index, :show] do
+      member do
+        post :book_slot
+        delete :cancel
+      end
+    end
+  end
+
+  namespace :admin do
+    get :home, to: "home#index"
+    resources :users, only: [:index, :show] do
+      member do
+        post :approve
+        post :reject
+      end
+    end
+    resources :players, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        post :assign_category
+        post :assign_role
+      end
+    end
   end
 
   namespace :coach do
     get :home, to: "home#index"
     resources :squad, only: [:index, :show]
-    resources :trainings, only: [:index, :show, :new, :create]
+    resources :trainings, only: [:index, :show, :new, :create, :edit, :update]
+    resources :matches, only: [:index, :new, :create, :show, :edit, :update] do
+      member do
+        post :update_squad
+      end
+    end
     resources :stats, only: [:index, :show]
     get "stats/matches/:id", to: "stats#match_detail"
+  end
+
+  namespace :pf do
+    get :home, to: "home#index"
+    resources :squad, only: [:index, :show] do
+      member do
+        post :evaluate
+      end
+    end
+    resources :trainings, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :eval_types, only: [:index, :new, :create, :edit, :update] do
+      member { patch :toggle }
+    end
+    resources :objectives, only: [:index, :new, :create]
+  end
+
+  namespace :nutricionista do
+    get :home, to: "home#index"
+    resources :squad, only: [:index, :show] do
+      member do
+        post :weigh
+        post :plan
+      end
+    end
+    resources :nutrition_sessions do
+      member do
+        post :generate_slots
+        post :publish
+        post :complete
+        post :add_convocado
+        delete :remove_convocado
+      end
+      resources :slots, controller: "nutrition_slots", only: [] do
+        member do
+          post :weigh_player
+        end
+      end
+    end
   end
 
   namespace :settings do

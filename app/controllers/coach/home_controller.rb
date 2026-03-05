@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Coach::HomeController < InertiaController
+class Coach::HomeController < Coach::ApplicationController
   def index
     render inertia: "coach/home/index", props: {
       coach: {
