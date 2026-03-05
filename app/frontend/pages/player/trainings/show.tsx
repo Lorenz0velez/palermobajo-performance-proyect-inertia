@@ -1,5 +1,5 @@
 import { Head, Link } from "@inertiajs/react"
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react"
+import { ArrowLeft, CheckCircle, XCircle, FileText } from "lucide-react"
 import PlayerLayout from "@/layouts/player/player-layout"
 
 interface Training {
@@ -9,6 +9,7 @@ interface Training {
   end_time: string
   training_type: string
   objective: string | null
+  pdf_url?: string | null
 }
 
 interface Attendance {
@@ -75,6 +76,37 @@ export default function PlayerTrainingShow({ training, attendance, perception }:
           <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4">
             <h2 className="text-xs font-semibold text-gray-400 uppercase mb-2">Objetivo</h2>
             <p className="text-gray-800">{training.objective}</p>
+          </div>
+        )}
+
+        {/* Plan de entrenamiento */}
+        {training.pdf_url && (
+          <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-bordo-100">
+                  <FileText className="h-5 w-5 text-bordo-700" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Plan de entrenamiento</p>
+                  <p className="text-xs text-gray-400">Semana 6 · Lucas Brouwer</p>
+                </div>
+              </div>
+              <a
+                href={training.pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl bg-bordo-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-bordo-700 transition-colors"
+              >
+                Ver PDF
+              </a>
+            </div>
+            <iframe
+              src={training.pdf_url}
+              className="w-full"
+              style={{ height: "380px" }}
+              title="Plan de entrenamiento"
+            />
           </div>
         )}
 

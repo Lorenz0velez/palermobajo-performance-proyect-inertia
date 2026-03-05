@@ -6,10 +6,10 @@ class Player::TrainingsController < InertiaController
   # Lesión nariz: desde 14/02 — ausente T9-T14, volvió T15 (26/02)
 
   FAKE_UPCOMING = [
-    { id: 18, date: "2026-03-05", start_time: "19:00", end_time: "21:00", training_type: "Físico",          objective: "Potencia y velocidad" },
-    { id: 19, date: "2026-03-09", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea", objective: "Lineout y scrum" },
-    { id: 20, date: "2026-03-10", start_time: "19:00", end_time: "21:00", training_type: "Táctica",         objective: "Preparación Fecha 1 vs Universitario" },
-    { id: 21, date: "2026-03-12", start_time: "19:00", end_time: "21:00", training_type: "Match practice",  objective: "Juego interno — última previa" }
+    { id: 18, date: "2026-03-05", start_time: "19:00", end_time: "21:00", training_type: "Físico",          objective: "Potencia y velocidad",               pdf_url: "/plans/semana-6.pdf" },
+    { id: 19, date: "2026-03-09", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea", objective: "Lineout y scrum",                    pdf_url: "/plans/semana-6.pdf" },
+    { id: 20, date: "2026-03-10", start_time: "19:00", end_time: "21:00", training_type: "Táctica",         objective: "Preparación Fecha 1 vs Universitario", pdf_url: "/plans/semana-6.pdf" },
+    { id: 21, date: "2026-03-12", start_time: "19:00", end_time: "21:00", training_type: "Match practice",  objective: "Juego interno — última previa",        pdf_url: nil }
   ]
 
   FAKE_PAST = [
@@ -26,8 +26,8 @@ class Player::TrainingsController < InertiaController
   ]
 
   FAKE_TRAINING_DETAIL = {
-    17 => { date: "2026-03-03", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea",  objective: "Lineout pod drive",         notes: nil, present: true,  minutes: 90, rpe: 6, load: 540, comments: "Bien el lineout" },
-    16 => { date: "2026-03-02", start_time: "19:00", end_time: "21:00", training_type: "Físico",           objective: "Potencia de tren inferior",  notes: nil, present: true,  minutes: 95, rpe: 8, load: 760, comments: "Muy duro, piernas al límite" },
+    17 => { date: "2026-03-03", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea",  objective: "Lineout pod drive",         notes: nil, pdf_url: "/plans/semana-6.pdf", present: true,  minutes: 90, rpe: 6, load: 540, comments: "Bien el lineout" },
+    16 => { date: "2026-03-02", start_time: "19:00", end_time: "21:00", training_type: "Físico",           objective: "Potencia de tren inferior",  notes: nil, pdf_url: "/plans/semana-6.pdf", present: true,  minutes: 95, rpe: 8, load: 760, comments: "Muy duro, piernas al límite" },
     15 => { date: "2026-02-26", start_time: "19:00", end_time: "21:00", training_type: "Físico + Scrum",   objective: "Empuje de scrum",            notes: nil, present: true,  minutes: 80, rpe: 7, load: 560, comments: "Primer entrenamiento post lesión" },
     14 => { date: "2026-02-24", start_time: "19:00", end_time: "21:00", training_type: "Táctica",          objective: "Ataque estructurado",        notes: nil, present: false, minutes: nil, rpe: nil, load: nil, comments: nil },
     13 => { date: "2026-02-23", start_time: "19:00", end_time: "21:00", training_type: "Físico",           objective: "Aceleraciones y contacto",   notes: nil, present: false, minutes: nil, rpe: nil, load: nil, comments: nil },

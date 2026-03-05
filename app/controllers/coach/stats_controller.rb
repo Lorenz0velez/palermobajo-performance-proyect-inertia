@@ -2,10 +2,37 @@
 
 class Coach::StatsController < InertiaController
   MATCHES = [
-    { id: 4, label: "Amistoso 4", opponent: "GER",                  home: false, points_for: 19, points_against: 24, date: "2026-02-28", result: "loss", tries_for: 2, tries_against: 3 },
-    { id: 3, label: "Amistoso 3", opponent: "Jockey Club CBA",      home: true,  points_for: 28, points_against: 21, date: "2026-02-21", result: "win",  tries_for: 4, tries_against: 3 },
-    { id: 2, label: "Amistoso 2", opponent: "Córdoba Athletic Club", home: true,  points_for: 22, points_against: 17, date: "2026-02-14", result: "win",  tries_for: 3, tries_against: 2 },
-    { id: 1, label: "Amistoso 1", opponent: "Partido Entre Nos",    home: true,  points_for: 35, points_against: 28, date: "2026-02-07", result: "win",  tries_for: 5, tries_against: 4 }
+    # Scrums propios: own_scrums_won / own_scrums_total (nuestro put-in)
+    # Scrums rival:   opp_scrums_stolen / opp_scrums_total (recuperados del put-in rival)
+    # Lineouts ídem
+    { id: 4, label: "Amistoso 4", opponent: "GER",                  home: false,
+      points_for: 19, points_against: 24, date: "2026-02-28", result: "loss",
+      tries_for: 2, tries_against: 3, penalties_for: 2, penalties_against: 5,
+      own_scrums_won: 4, own_scrums_total: 7,
+      opp_scrums_stolen: 2, opp_scrums_total: 6,
+      own_lineouts_won: 7, own_lineouts_total: 9,
+      opp_lineouts_stolen: 2, opp_lineouts_total: 8 },
+    { id: 3, label: "Amistoso 3", opponent: "Jockey Club CBA",      home: true,
+      points_for: 28, points_against: 21, date: "2026-02-21", result: "win",
+      tries_for: 4, tries_against: 3, penalties_for: 4, penalties_against: 3,
+      own_scrums_won: 6, own_scrums_total: 8,
+      opp_scrums_stolen: 3, opp_scrums_total: 7,
+      own_lineouts_won: 10, own_lineouts_total: 12,
+      opp_lineouts_stolen: 3, opp_lineouts_total: 7 },
+    { id: 2, label: "Amistoso 2", opponent: "Córdoba Athletic Club", home: true,
+      points_for: 22, points_against: 17, date: "2026-02-14", result: "win",
+      tries_for: 3, tries_against: 2, penalties_for: 3, penalties_against: 4,
+      own_scrums_won: 5, own_scrums_total: 7,
+      opp_scrums_stolen: 2, opp_scrums_total: 6,
+      own_lineouts_won: 9, own_lineouts_total: 10,
+      opp_lineouts_stolen: 2, opp_lineouts_total: 8 },
+    { id: 1, label: "Amistoso 1", opponent: "Partido Entre Nos",    home: true,
+      points_for: 35, points_against: 28, date: "2026-02-07", result: "win",
+      tries_for: 5, tries_against: 4, penalties_for: 5, penalties_against: 2,
+      own_scrums_won: 5, own_scrums_total: 8,
+      opp_scrums_stolen: 4, opp_scrums_total: 8,
+      own_lineouts_won: 11, own_lineouts_total: 13,
+      opp_lineouts_stolen: 3, opp_lineouts_total: 8 }
   ]
 
   # Estadísticas individuales por partido (para la vista de detalle de partido)

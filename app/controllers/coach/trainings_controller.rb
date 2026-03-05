@@ -2,15 +2,16 @@
 
 class Coach::TrainingsController < InertiaController
   UPCOMING = [
-    { id: 18, date: "2026-03-05", start_time: "19:00", end_time: "21:00", training_type: "Físico",          objective: "Potencia y velocidad",           has_plan: false },
-    { id: 19, date: "2026-03-09", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea", objective: "Lineout y scrum",                has_plan: true  },
-    { id: 20, date: "2026-03-10", start_time: "19:00", end_time: "21:00", training_type: "Táctica",         objective: "Prep. Fecha 1 vs Universitario", has_plan: true  },
-    { id: 21, date: "2026-03-12", start_time: "19:00", end_time: "21:00", training_type: "Match practice",  objective: "Juego interno — última previa",   has_plan: false }
+    { id: 18, date: "2026-03-05", start_time: "19:00", end_time: "21:00", training_type: "Físico",          objective: "Potencia y velocidad",           has_plan: true,  pdf_url: "/plans/semana-6.pdf" },
+    { id: 19, date: "2026-03-09", start_time: "19:00", end_time: "21:00", training_type: "Técnica + Línea", objective: "Lineout y scrum",                has_plan: true,  pdf_url: "/plans/semana-6.pdf" },
+    { id: 20, date: "2026-03-10", start_time: "19:00", end_time: "21:00", training_type: "Táctica",         objective: "Prep. Fecha 1 vs Universitario", has_plan: true,  pdf_url: "/plans/semana-6.pdf" },
+    { id: 21, date: "2026-03-12", start_time: "19:00", end_time: "21:00", training_type: "Match practice",  objective: "Juego interno — última previa",   has_plan: false, pdf_url: nil }
   ]
 
   PAST = [
     {
       id: 17, date: "2026-03-03", training_type: "Técnica + Línea", objective: "Lineout pod drive",
+      pdf_url: "/plans/semana-6.pdf",
       attendance: { present: 8, absent: 2, total: 10 },
       perception_by_role: [
         { group: "Forwards", count: 6, rpe_avg: 6.2, fatigue_avg: 2.1, injury_impact_avg: 1.1 },
@@ -19,6 +20,7 @@ class Coach::TrainingsController < InertiaController
     },
     {
       id: 16, date: "2026-03-02", training_type: "Físico", objective: "Potencia de tren inferior",
+      pdf_url: "/plans/semana-6.pdf",
       attendance: { present: 9, absent: 1, total: 10 },
       perception_by_role: [
         { group: "Forwards", count: 6, rpe_avg: 7.8, fatigue_avg: 3.4, injury_impact_avg: 1.5 },

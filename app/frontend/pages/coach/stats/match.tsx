@@ -11,6 +11,20 @@ interface Match {
   points_against: number
   tries_for: number
   tries_against: number
+  // Scrums propios (nuestro put-in)
+  own_scrums_won: number
+  own_scrums_total: number
+  // Scrums rival (su put-in) → recuperados = stolen
+  opp_scrums_stolen: number
+  opp_scrums_total: number
+  // Lineouts propios (nuestro lanzamiento)
+  own_lineouts_won: number
+  own_lineouts_total: number
+  // Lineouts rival (su lanzamiento) → recuperados = stolen
+  opp_lineouts_stolen: number
+  opp_lineouts_total: number
+  penalties_for: number
+  penalties_against: number
   date: string
   result: string
 }
@@ -95,19 +109,44 @@ export default function CoachStatsMatch({ match, players }: Props) {
       <div className="px-4 pt-4 pb-8 space-y-5">
 
         {/* Team summary */}
-        <section className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Resumen del equipo</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-bordo-50 p-3 text-center">
-              <p className="text-2xl font-bold text-bordo-800">{match.points_for}</p>
-              <p className="text-xs text-gray-500 mt-0.5">Puntos</p>
-            </div>
-            <div className="rounded-xl bg-bordo-50 p-3 text-center">
-              <p className="text-2xl font-bold text-bordo-800">{match.tries_for}</p>
-              <p className="text-xs text-gray-500 mt-0.5">Tries</p>
-            </div>
+        <section className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
+          <div className="px-4 pt-4 pb-2">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Estadísticas del equipo</h2>
+          </div>
+
+          {/* Header row */}
+          <div className="grid grid-cols-3 px-4 py-2 bg-gray-50 border-y border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <span className="text-center text-bordo-700">Palermo Bajo</span>
+            <span className="text-center"> </span>
+            <span className="text-center">{match.opponent}</span>
+          </div>
+
+          <div className="divide-y divide-gray-50">
+            <TeamStatRow label="Puntos" us={match.points_for}  them={match.points_against} />
+            <TeamStatRow label="Tries"  us={match.tries_for}   them={match.tries_against}  />
+            <TeamStatRow label="Penales" us={match.penalties_for} them={match.penalties_against} flipLower />
           </div>
         </section>
+
+        {/* Scrums */}
+        <SetPieceSection
+          title="Scrums"
+          ownWon={match.own_scrums_won}
+          ownTotal={match.own_scrums_total}
+          oppStolen={match.opp_scrums_stolen}
+          oppTotal={match.opp_scrums_total}
+          opponent={match.opponent}
+        />
+
+        {/* Lineouts */}
+        <SetPieceSection
+          title="Lineouts"
+          ownWon={match.own_lineouts_won}
+          ownTotal={match.own_lineouts_total}
+          oppStolen={match.opp_lineouts_stolen}
+          oppTotal={match.opp_lineouts_total}
+          opponent={match.opponent}
+        />
 
         {/* Forwards */}
         {forwards.length > 0 && (
@@ -121,6 +160,90 @@ export default function CoachStatsMatch({ match, players }: Props) {
 
       </div>
     </CoachLayout>
+  )
+}
+
+function TeamStatRow({
+  label, us, them, flipLower = false
+}: {
+  label: string; us: number; them: number; flipLower?: boolean
+}) {
+  // flipLower: lower is better (e.g. penalties against us)
+  const usWins   = flipLower ? us <= them : us >= them
+  const themWins = flipLower ? them < us  : them > us
+
+  return (
+    <div className="grid grid-cols-3 px-4 py-3 items-center">
+      <p className={`text-center text-lg font-bold ${
+        usWins ? "text-bordo-800" : "text-gray-400"
+      }`}>{us}</p>
+      <p className="text-center text-xs text-gray-400 font-medium">{label}</p>
+      <p className={`text-center text-lg font-bold ${
+        themWins ? "text-red-500" : "text-gray-400"
+      }`}>{them}</p>
+    </div>
+  )
+}
+
+function SetPieceSection({
+  title, ownWon, ownTotal, oppStolen, oppTotal, opponent
+}: {
+  title: string
+  ownWon: number; ownTotal: number
+  oppStolen: number; oppTotal: number
+  opponent: string
+}) {
+  const ownLost    = ownTotal - ownWon
+  const oppWon     = oppTotal - oppStolen   // rival retuvo en su lanzamiento
+  const ownPct     = ownTotal   > 0 ? Math.round((ownWon    / ownTotal)   * 100) : 0
+  const oppStolPct = oppTotal   > 0 ? Math.round((oppStolen / oppTotal)   * 100) : 0
+
+  return (
+    <section className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-4 pt-4 pb-2">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{title}</h2>
+      </div>
+
+      <div className="divide-y divide-gray-50">
+        {/* Propios */}
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Propios (nuestro put-in)</span>
+            <span className="text-xs text-gray-400">{ownTotal} lanzados</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-gray-100 rounded-full h-2">
+              <div
+                className="bg-bordo-600 h-2 rounded-full"
+                style={{ width: `${ownPct}%` }}
+              />
+            </div>
+            <span className="text-sm font-semibold text-bordo-800 w-16 text-right">
+              {ownWon}<span className="text-gray-400 font-normal"> gan · </span>{ownLost}<span className="text-gray-400 font-normal"> perd</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Rival */}
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Rival ({opponent}) put-in</span>
+            <span className="text-xs text-gray-400">{oppTotal} lanzados</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-gray-100 rounded-full h-2">
+              <div
+                className="bg-green-500 h-2 rounded-full"
+                style={{ width: `${oppStolPct}%` }}
+              />
+            </div>
+            <span className="text-sm font-semibold text-green-700 w-16 text-right">
+              {oppStolen}<span className="text-gray-400 font-normal"> recup · </span>{oppWon}<span className="text-gray-400 font-normal"> de ellos</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 

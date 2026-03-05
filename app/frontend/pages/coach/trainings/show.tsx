@@ -1,5 +1,5 @@
 import { Head, Link } from "@inertiajs/react"
-import { ArrowLeft, Users, TrendingUp } from "lucide-react"
+import { ArrowLeft, Users, TrendingUp, FileText } from "lucide-react"
 import CoachLayout from "@/layouts/coach/coach-layout"
 
 interface PerceptionGroup {
@@ -7,6 +7,7 @@ interface PerceptionGroup {
 }
 interface Training {
   id: number; date: string; training_type: string; objective: string
+  pdf_url?: string | null
   attendance: { present: number; absent: number; total: number } | null
   perception_by_role: PerceptionGroup[] | null
 }
@@ -114,6 +115,42 @@ export default function CoachTrainingsShow({ training }: Props) {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* Plan de entrenamiento PDF */}
+        {training.pdf_url && (
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-2">
+              <FileText className="h-4 w-4" /> Plan de entrenamiento
+            </h2>
+            <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-bordo-100">
+                    <FileText className="h-5 w-5 text-bordo-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Semana 6 — Planificación</p>
+                    <p className="text-xs text-gray-400">Cargado por Lucas Brouwer</p>
+                  </div>
+                </div>
+                <a
+                  href={training.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-bordo-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-bordo-700 transition-colors"
+                >
+                  Ver PDF
+                </a>
+              </div>
+              <iframe
+                src={training.pdf_url}
+                className="w-full"
+                style={{ height: "420px" }}
+                title="Plan de entrenamiento"
+              />
             </div>
           </section>
         )}
