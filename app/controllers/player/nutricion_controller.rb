@@ -43,7 +43,34 @@ class Player::NutricionController < Player::ApplicationController
       history:         history,
       latest:          history.first,
       plans:           plans,
-      latest_plan:     plans.first
+      latest_plan:     plans.first,
+      sessions:        sessions_props(player)
     }
+  end
+
+  private
+
+  def sessions_props(player)
+    return [] unless player.nutrition_tracking.present?
+    NutritionConvocado
+      .where(player: player)
+      .joins(:nutrition_session)
+      .where("nutrition_sessions.status IN (?)", %w[published completed])
+      .where("nutrition_sessions.date >= ?", 30.days.ago)
+      .includes(:nutrition_session, :nutrition_slot)
+      .order("nutrition_sessions.date DESC")
+      .map do |c|
+        ns = c.nutrition_session
+        {
+          id:           ns.id,
+          date_display: ns.date.strftime("%d/%m/%Y"),
+          day_name:     ns.date.strftime("%A"),
+          status:       ns.status,
+          slot_time:    c.nutrition_slot ? c.nutrition_slot.start_time.strftime("%H:%M") : nil,
+          booked:       c.booked?,
+          pending:      c.pending?,
+          cancelled:    c.cancelled?
+        }
+      end
   end
 end

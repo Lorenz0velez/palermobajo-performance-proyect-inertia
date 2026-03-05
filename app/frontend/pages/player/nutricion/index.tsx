@@ -1,5 +1,5 @@
-import { Head } from "@inertiajs/react"
-import { ChevronDown, ChevronUp, Minus, Scale, TrendingDown, TrendingUp, Utensils } from "lucide-react"
+import { Head, Link } from "@inertiajs/react"
+import { AlertCircle, CheckCircle, ChevronDown, ChevronRight, ChevronUp, Minus, Scale, TrendingDown, TrendingUp, Utensils, XCircle } from "lucide-react"
 import { useState } from "react"
 
 import PlayerLayout from "@/layouts/player/player-layout"
@@ -27,11 +27,23 @@ interface NutritionPlan {
   extra_notes: string | null
 }
 
+interface SessionItem {
+  id: number
+  date_display: string
+  day_name: string
+  status: string
+  slot_time: string | null
+  booked: boolean
+  pending: boolean
+  cancelled: boolean
+}
+
 interface Props {
   history: HistoryEntry[]
   latest: HistoryEntry | null
   plans: NutritionPlan[]
   latest_plan: NutritionPlan | null
+  sessions: SessionItem[]
 }
 
 const DIRECTION_CONFIG: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
@@ -118,7 +130,7 @@ function PlanCard({ plan }: { plan: NutritionPlan }) {
   )
 }
 
-export default function PlayerNutricion({ history, latest, plans, latest_plan }: Props) {
+export default function PlayerNutricion({ history, latest, plans, latest_plan, sessions }: Props) {
   const [showAllHistory, setShowAllHistory] = useState(false)
   const displayedHistory = showAllHistory ? history : history.slice(0, 3)
 
@@ -133,6 +145,45 @@ export default function PlayerNutricion({ history, latest, plans, latest_plan }:
       </div>
 
       <div className="px-5 py-5 space-y-5">
+
+        {/* Sessions / convocatorias */}
+        {sessions.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Mis turnos</p>
+            <div className="space-y-2">
+              {sessions.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/player/nutrition_sessions/${s.id}`}
+                  className="flex items-center justify-between bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 hover:bg-gray-50 transition-colors"
+                >
+                  <div>
+                    <p className="text-xs text-gray-400 capitalize">{s.day_name}</p>
+                    <p className="font-semibold text-gray-800 text-sm">{s.date_display}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {s.cancelled ? (
+                      <span className="flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+                        <XCircle className="h-3 w-3" /> Cancelado
+                      </span>
+                    ) : s.booked ? (
+                      <span className="flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
+                        <CheckCircle className="h-3 w-3" /> {s.slot_time} hs
+                      </span>
+                    ) : s.status === "published" ? (
+                      <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-full px-2 py-0.5">
+                        <AlertCircle className="h-3 w-3" /> Elegir turno
+                      </span>
+                    ) : (
+                      <span className="text-xs font-medium text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Próximamente</span>
+                    )}
+                    <ChevronRight className="h-4 w-4 text-gray-300" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Latest measurements */}
         {latest ? (

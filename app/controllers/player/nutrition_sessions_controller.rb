@@ -5,7 +5,7 @@ class Player::NutritionSessionsController < Player::ApplicationController
 
   def index
     unless @player.nutrition_tracking.present?
-      return render inertia: "player/nutrition_sessions/index", props: { sessions: [] }
+      return render inertia: "player/nutrition_sessions/index", props: { convocatorias: [] }
     end
 
     convocados = NutritionConvocado
@@ -14,7 +14,7 @@ class Player::NutritionSessionsController < Player::ApplicationController
       .order("nutrition_sessions.date DESC")
 
     render inertia: "player/nutrition_sessions/index", props: {
-      sessions: convocados.map { |c| serialize_convocado(c) }
+      convocatorias: convocados.map { |c| serialize_convocado(c) }
     }
   end
 
@@ -33,18 +33,14 @@ class Player::NutritionSessionsController < Player::ApplicationController
         start_time: slot.start_time.strftime("%H:%M"),
         end_time:   slot.end_time.strftime("%H:%M"),
         available:  booked_count < ns.capacity_per_slot,
-        is_mine:    convocado.nutrition_slot_id == slot.id
+        booked:     booked_count,
+        capacity:   ns.capacity_per_slot
       }
     end
 
     render inertia: "player/nutrition_sessions/show", props: {
-      session:   { id: ns.id, date: ns.date.strftime("%Y-%m-%d"), date_display: ns.date.strftime("%d/%m/%Y"), day_name: ns.date.strftime("%A") },
-      my_slot:   convocado.nutrition_slot ? {
-        id:         convocado.nutrition_slot.id,
-        start_time: convocado.nutrition_slot.start_time.strftime("%H:%M"),
-        end_time:   convocado.nutrition_slot.end_time.strftime("%H:%M")
-      } : nil,
-      cancelled:  convocado.cancelled?,
+      session:    { id: ns.id, date: ns.date.strftime("%Y-%m-%d"), date_display: ns.date.strftime("%d/%m/%Y"), day_name: ns.date.strftime("%A"), status: ns.status },
+      my_slot_id: convocado.nutrition_slot_id,
       slots:      slots
     }
   end
@@ -79,14 +75,15 @@ class Player::NutritionSessionsController < Player::ApplicationController
   def serialize_convocado(c)
     ns = c.nutrition_session
     {
-      id:          ns.id,
-      date:        ns.date.strftime("%Y-%m-%d"),
+      id:           ns.id,
+      date:         ns.date.strftime("%Y-%m-%d"),
       date_display: ns.date.strftime("%d/%m/%Y"),
-      day_name:    ns.date.strftime("%A"),
-      status:      ns.status,
-      my_slot:     c.nutrition_slot ? c.nutrition_slot.start_time.strftime("%H:%M") : nil,
-      pending:     c.pending?,
-      cancelled:   c.cancelled?
+      day_name:     ns.date.strftime("%A"),
+      status:       ns.status,
+      slot_time:    c.nutrition_slot ? c.nutrition_slot.start_time.strftime("%H:%M") : nil,
+      booked:       c.booked?,
+      pending:      c.pending?,
+      cancelled:    c.cancelled?
     }
   end
 end
