@@ -16,7 +16,7 @@ class Nutricionista::NutritionSessionsController < Nutricionista::ApplicationCon
   end
 
   def new
-    players = all_players.includes(:functional_role).order(:last_name)
+    players = tracked_players.includes(:functional_role).order(:last_name)
     render inertia: "nutricionista/nutrition_sessions/new", props: {
       players: players.map { |p| { id: p.id, full_name: p.full_name, functional_role: p.functional_role&.name } }
     }
@@ -37,7 +37,7 @@ class Nutricionista::NutritionSessionsController < Nutricionista::ApplicationCon
   end
 
   def show
-    players_all = all_players.includes(:functional_role).order(:last_name)
+    players_all = tracked_players.includes(:functional_role).order(:last_name)
     convocado_ids = @ns.nutrition_convocados.pluck(:player_id)
 
     slots = @ns.nutrition_slots.order(:start_time).map do |slot|
